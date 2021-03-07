@@ -1,0 +1,32 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: image-poller
+  namespace: default
+  labels:
+    name: image-poller
+spec:
+  schedule: '*/5 * * * *'
+  concurrencyPolicy: Replace
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccount: image-poller
+          restartPolicy: Never
+          containers:
+            - name: app
+              image: "docker.pkg.github.com/image-poller"
+              imagePullPolicy: Always
+              env:
+                - name: DOCKER_CONFIG
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-name-to-your-registry
+                      key: .dockerconfigjson
+                - name: ENV
+                  value: PROD
+                - name: CHECKS
+                  value: example
