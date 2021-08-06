@@ -184,7 +184,7 @@ func main() {
         fmt.Println("error encountered when marshalling patches: ", err)
         continue
       }
-      _, err = clientset.AppsV1().Deployments("default").Patch(context.TODO(), "hgfiy", types.JSONPatchType, patchBytes, metav1.PatchOptions{})
+      _, err = clientset.AppsV1().Deployments("default").Patch(context.TODO(), deploymentName, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
       if err != nil {
         fmt.Println("error encountered when updating last known digest: ", err)
         continue
