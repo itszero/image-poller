@@ -17,3 +17,4 @@ Set the following environment variables:
 | ENV           | Set to `PROD` for in-cluster authentication. It will read from `~/.kube/config` otherwise.                          |
 | DOCKER_CONFIG | Can be omitted. This is used when you need to authenticate with your docker registry, for example, Github packages. |
 | CHECKS        | comma-delimited string for all deployment names that needs to be checked.                                           |
+| NAMESPACE     | namespace to check, default to `default`.                                                                           |
