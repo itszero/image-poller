@@ -98,12 +98,18 @@ func encodeJSONPointer(input string) string {
 
 func main() {
   var checks []string
+  var namespace string = "default"
   if env, found := os.LookupEnv("CHECKS"); found {
     checks = strings.Split(env, ",")
   } else {
     fmt.Println("CHECKS is not defined")
     os.Exit(1)
   }
+
+  if env, found := os.LookupEnv("NAMESPACE"); found {
+    namespace = env
+  }
+  fmt.Println("Using namespace: %s", namespace)
 
   var dockerConfig DockerConfig
   if env, found := os.LookupEnv("DOCKER_CONFIG"); found {
