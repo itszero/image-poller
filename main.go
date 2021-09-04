@@ -28,6 +28,12 @@ type PatchSpec struct {
 	Value string `json:"value"`
 }
 
+type PatchMapSpec struct {
+	Op    string            `json:"op"`
+	Path  string            `json:"path"`
+	Value map[string]string `json:"value"`
+}
+
 func splitImageDescriptor(descriptor string) (string, string, string) {
 	descriptor_parts := strings.Split(descriptor, ":")
 	url := descriptor_parts[0]
@@ -207,14 +213,29 @@ func main() {
 		// restart deployment if digest changed
 		if hasChanged {
 			log.Println("restarting deployment")
-			patches := make([]PatchSpec, 1)
-			patches[0].Op = "add"
-			var pathBuilder strings.Builder
-			pathBuilder.WriteString("/spec/template/metadata/annotations/")
-			pathBuilder.WriteString(encodeJSONPointer("kubectl.kubernetes.io/restartedAt"))
-			patches[0].Path = pathBuilder.String()
-			patches[0].Value = time.Now().Format(time.RFC3339)
-			patchBytes, err := json.Marshal(patches)
+
+			patchBytes := make([]byte, 0)
+			if len(deployment.Spec.Template.Annotations) == 0 {
+				patches := make([]PatchMapSpec, 1)
+				patches[0].Op = "add"
+				var pathBuilder strings.Builder
+				pathBuilder.WriteString("/spec/template/metadata/annotations")
+				patches[0].Path = pathBuilder.String()
+				annotations := make(map[string]string)
+				annotations["kubectl.kubernetes.io/restartedAt"] = time.Now().Format(time.RFC3339)
+				patches[0].Value = annotations
+				patchBytes, err = json.Marshal(patches)
+			} else {
+				patches := make([]PatchSpec, 1)
+				patches[0].Op = "add"
+				var pathBuilder strings.Builder
+				pathBuilder.WriteString("/spec/template/metadata/annotations/")
+				pathBuilder.WriteString(encodeJSONPointer("kubectl.kubernetes.io/restartedAt"))
+				patches[0].Path = pathBuilder.String()
+				patches[0].Value = time.Now().Format(time.RFC3339)
+				patchBytes, err = json.Marshal(patches)
+			}
+
 			if err != nil {
 				fmt.Println("error encountered when marshalling patches: ", err)
 				continue
