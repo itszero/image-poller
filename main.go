@@ -146,7 +146,7 @@ func main() {
 
   for _, deploymentName := range checks {
     log.Printf("processing deployment %s\n", deploymentName)
-    deployment, err := clientset.AppsV1().Deployments("default").Get(context.TODO(), deploymentName, metav1.GetOptions{})
+    deployment, err := clientset.AppsV1().Deployments(namespace).Get(context.TODO(), deploymentName, metav1.GetOptions{})
     if err != nil {
       panic(err.Error())
     }
@@ -190,7 +190,7 @@ func main() {
         fmt.Println("error encountered when marshalling patches: ", err)
         continue
       }
-      _, err = clientset.AppsV1().Deployments("default").Patch(context.TODO(), deploymentName, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
+      _, err = clientset.AppsV1().Deployments(namespace).Patch(context.TODO(), deploymentName, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
       if err != nil {
         fmt.Println("error encountered when updating last known digest: ", err)
         continue
@@ -219,7 +219,7 @@ func main() {
         fmt.Println("error encountered when marshalling patches: ", err)
         continue
       }
-      _, err = clientset.AppsV1().Deployments("default").Patch(context.TODO(), deploymentName, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
+      _, err = clientset.AppsV1().Deployments(namespace).Patch(context.TODO(), deploymentName, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
       if err != nil {
         fmt.Println("error encountered when restarting deployment: ", err)
         continue
