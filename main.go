@@ -115,7 +115,7 @@ func main() {
 	if env, found := os.LookupEnv("NAMESPACE"); found {
 		namespace = env
 	}
-	fmt.Println("Using namespace:", namespace)
+	log.Println("Using namespace:", namespace)
 
 	var dockerConfig DockerConfig
 	if env, found := os.LookupEnv("DOCKER_CONFIG"); found {
